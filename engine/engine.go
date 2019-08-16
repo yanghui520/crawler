@@ -25,4 +25,6 @@ func Run(seeds ...Request) {
 			log.Printf("got item %s",item)
 		}
 	}
+
+	
 }
