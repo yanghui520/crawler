@@ -21,7 +21,7 @@ func ParserProfile(content []byte)engine.ParseRequest  {
 		}
 	}
 
-	re=regexp.MustCompile(ageRe)
+	re=regexp.MustCompile(workRe)
 	match=re.FindSubmatch(content)
 	if match !=nil{
 		profile.Work=string(match[1])
