@@ -6,24 +6,27 @@ import (
 	"regexp"
 	"strconv"
 )
-const ageRe=`<div class="m-btn purple" data-v-bff6f798="">([\d]+)岁</div>`
-const workRe  =`<div class="m-btn purple" data-v-bff6f798="">工作地:([^<]+)</div>`
+var ageRe=regexp.MustCompile(`<div class="m-btn purple" data-v-bff6f798="">([\d]+)岁</div>`)
+var workRe  =regexp.MustCompile(`<div class="m-btn purple" data-v-bff6f798="">工作地:([^<]+)</div>`)
 
-func ParserProfile(content []byte)engine.ParseRequest  {
+func ParserProfile(content []byte,Name string)engine.ParseRequest  {
 	profile := model.Profile{}
-
-	re:=regexp.MustCompile(ageRe)
-	match:=re.FindSubmatch(content)
-	if match !=nil{
-		age,err:=strconv.Atoi(string(match[1]))
-		if err !=nil{
-			profile.Age=age
-		}
+	age,err:=strconv.Atoi(extString(content,ageRe))
+	if err !=nil{
+		profile.Age=age
 	}
-
-	re=regexp.MustCompile(workRe)
-	match=re.FindSubmatch(content)
-	if match !=nil{
-		profile.Work=string(match[1])
+	profile.Name=Name
+	profile.Work=extString(content,workRe)
+	res:= engine.ParseRequest{
+		Items:[]interface{}{profile},
+	}
+	return res
+}
+func extString(content []byte,re *regexp.Regexp) string {
+	match:=re.FindSubmatch(content)
+	if len(match)>=2{
+		return string(match[1])
+	}else {
+		return ""
 	}
 }
